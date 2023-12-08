@@ -1,11 +1,12 @@
-import logging
-compiler_logger = logging.getLogger('Compiler')
+
 start = 'start'
 def p_start(p):
     '''start : select 
              | insert 
              | update 
-             | delete'''
+             | delete
+             | run
+             | train '''
     p[0] = p[1]
 
 def p_empty(p):
@@ -14,45 +15,84 @@ def p_empty(p):
 
 def p_error(p):
     print("Syntax error!")
-    print(p)
-    if(p is None):
-        compiler_logger.error('Unexpected end of file')
-    else:
-        compiler_logger.error(p)
 
 
+###########################
+#==== Select STATEMENT ====
+###########################
+def p_Select2(p):
+    'select : SELECT select_columns INTO DATASOURCE FROM DATASOURCE USING MODEL EQUAL DATASOURCE AND FRAMEDIR EQUAL DATASOURCE'
+    if type(p[2]) == str:
+        p[2] = "'" + p[2] + "'"
+    p[4] = str(p[4]).replace("\\", "\\\\")
+    p[6] = str(p[6]).replace("\\", "\\\\")
+    p[10] = str(p[10]).replace("\\", "\\\\")
+    p[14] = str(p[14]).replace("\\", "\\\\")
+    p[0] = (
+        f"from app.ExcelSheetGenerator.main import *\n"
+        f"columnList= {p[2]}\n"
+        f"video_Path= '{p[4]}'\n"
+        f"sheet_path= '{p[6]}'\n"
+        f"model_Path= '{p[10]}'\n"
+        f"folder_path= '{p[14]}'\n"
+        f"ExcelSheetGenerator(columnList,video_Path,sheet_path,model_Path,folder_path)\n"
+    )
+###########################
+#==== TRAIN STATEMENT ====
+###########################
+def p_train(p):
+    'train : TRAIN INTO DATASOURCE FROM DATASOURCE WHERE MODEL EQUAL MODELNAME'
+    print("Length of p:", len(p))
+    print("Contents of p:", p)
+
+
+    p[3] = str(p[3]).replace("\\", "\\\\")
+    p[5] = str(p[5]).replace("\\", "\\\\")
+    p[0] = (
+        f"from app.etl.etlCore import etl\n"
+        f"DataOp = {{\n"
+        f"    'operation_type': 'train',\n"
+        f"    'source': '{p[3]}',\n"
+        f"    'destination': '{p[5]}',\n"
+        f"    'model': '{p[9]}',\n"
+        f"}}\n"
+        f"DataSoruce = etl('{p[3]}', '{p[5]}', DataOp)\n"
+        f"DataSoruce.StartThread()\n"
+    )
 
 
 ###########################
 #==== SELECT STATEMENT​​ ====
 ###########################
-#SELECT feature1,freature2 from c:\video.mp4 into c:\sharaf.csv
+
 def p_select(p):
     'select : SELECT distinct select_columns FROM DATASOURCE into where order limit SIMICOLON'
-    print('yacc satrt')
+
     if type(p[3]) == str:
         p[3] = "'" + p[3] + "'"
-    
+
     p[5] = str(p[5]).replace("\\", "\\\\")
     p[6] = str(p[6]).replace("\\", "\\\\")
+
     p[0] = (
-        f"from app import etl\n"
-        f"\n"
-        f"data = etl.extract('{p[5]}')\n"
-        f"data = etl.transform(\n"
-        f"   data,\n"
-        f"   {{\n"  
+        f"from app.etl.etlCore import etl\n"
+        f"DataOp = {{\n"
+        f"    'operation_type': 'select',\n"
+        f"        'op_type':  {p[3]},\n"
         f"        'COLUMNS':  {p[3]},\n"
         f"        'DISTINCT': {p[2]},\n"
         f"        'FILTER':   {p[7]},\n"
         f"        'ORDER':    {p[8]},\n"
-        f"        'LIMIT':    {p[9]},\n"
-        f"    }}\n"
-        f")\n"
-        f"etl.load(data, '{p[6]}')\n"
-    )
-    
+        f"        'LIMIT':    {p[9]},\n"   
+        "       }\n"
+        f"DataSoruce = etl('{p[5]}' , '{p[6]}', DataOp)\n"
+        f"DataSoruce.SetupThread()\n"
+        f"DataSoruce.ExtractData()\n"
+        f"DataSoruce.TransformData()\n"
+        f"DataSoruce.LoadData()\n"
+        f"DataSoruce.StartThread()\n"
 
+    )
 
 ###########################
 #==== INSERT STATEMENT ====
@@ -71,6 +111,17 @@ def p_insert(p):
         f"data = pd.DataFrame(values, columns={p[4]})\n"
         f"etl.load(data, data_destination)\n"
     )
+    p[0] = (
+        f"from app.etl.etlCore import etl\n"
+        f"import pandas as pd\n"
+        f"\n"
+        f"values = {p[6]}\n"
+        f"data_destination = '{p[3]}'\n"
+        f"data = pd.DataFrame(values, columns={p[4]})\n"
+        f"DataSource = elt(None, data_destination, None, data)"
+
+    )
+
 
 
 
@@ -190,7 +241,7 @@ def p_select_columns_all(p):
     p[0] = '__all__'
 
 def p_select_columns(p):
-    'select_columns : columns'
+    'select_columns : COLNAME'
     p[0] = p[1]
 
 
@@ -205,7 +256,7 @@ def p_into(p):
 
 def p_into_empty(p):
     'into : empty'
-    p[0] = 'custom::'
+    p[0] = 'CONSOLE'
 
 
 
@@ -321,4 +372,17 @@ def p_assigns_end(p):
     'assigns : assign'
     p[0] = [p[1]]
 
-    
+
+###########################
+#===== RUN COLUMNS​​ =====
+###########################
+
+def p_run(p):
+    'run : RUN DATASOURCE'
+    p[2] = str(p[2]).replace("\\", "\\\\")
+    p[0] = (
+        "from app.BirdDetector.Detector import Detector\n"
+        f"StartStream = Detector()\n"
+        f"StartStream.readFile('{p[2]}')"
+
+    )

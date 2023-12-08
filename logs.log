@@ -1048,3 +1048,18 @@ PermissionError: [Errno 13] Permission denied: 'd:\\sharaf\\etlv2\\test.csv'
 2022-12-17 20:47:03 INFO     Load Data distination type is: Console
 2022-12-17 20:50:56 INFO     Extract Data source type is: Media
 2022-12-17 20:50:56 INFO     Load Data distination type is: Console
+2023-12-06 17:13:46 ERROR    LexToken(LPAREN,'(',1,13)
+2023-12-06 17:14:42 ERROR    LexToken(INTO,'into',29,11)
+2023-12-06 17:15:05 ERROR    LexToken(INTO,'into',33,11)
+2023-12-06 17:15:20 ERROR    LexToken(INTO,'into',37,11)
+2023-12-06 17:15:20 ERROR    LexToken(INTO,'into',41,11)
+2023-12-06 17:15:21 ERROR    LexToken(INTO,'into',45,11)
+2023-12-06 17:15:52 ERROR    LexToken(INTO,'into',49,11)
+2023-12-06 17:15:53 ERROR    LexToken(INTO,'into',53,11)
+2023-12-06 17:15:53 ERROR    LexToken(INTO,'into',57,11)
+2023-12-06 17:15:53 ERROR    LexToken(INTO,'into',61,11)
+2023-12-06 17:15:53 ERROR    LexToken(INTO,'into',65,11)
+2023-12-06 17:15:56 ERROR    LexToken(INTO,'into',69,11)
+2023-12-06 17:15:57 ERROR    LexToken(INTO,'into',73,11)
+2023-12-06 17:15:57 ERROR    LexToken(INTO,'into',77,11)
+2023-12-06 17:15:57 ERROR    LexToken(INTO,'into',81,11)

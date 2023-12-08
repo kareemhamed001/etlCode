@@ -1,2 +1,2 @@
-from app.etl.core import *
+from app.etl.etlCore import *
 
