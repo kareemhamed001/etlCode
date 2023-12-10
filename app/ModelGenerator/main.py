@@ -5,7 +5,7 @@ import PIL
 import scipy
 
 
-def ModelGenerator(ModelPath,traindir,ModelName):
+def ModelGenerator(ModelPath,traindir,ModelName,epochs:int=60,batchSize:int=50):
     # Example usage:
     input_shape = (256, 256, 3)  # Input image shape (height, width, channels)
     train_dir = traindir
@@ -14,9 +14,8 @@ def ModelGenerator(ModelPath,traindir,ModelName):
     model = CNNModel(input_shape, num_classes, ModelName)
     model.compile_model()
 
-    batch_size = 10
-    epochs = 60
-    model.train_model(train_dir, batch_size, epochs)
+
+    model.train_model(train_dir, batchSize, epochs)
 
     model_path = ModelPath  # Path to save the trained model
     model.save_model(model_path)

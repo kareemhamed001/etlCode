@@ -25,7 +25,9 @@ reserved = {
     'train':'TRAIN',
     'model':'MODEL',
     'using':'USING',
-    'framedir':'FRAMEDIR'
+    'framedir':'FRAMEDIR',
+    'epoch':'EPOCH',
+    'batchsize':'BATCHSIZE'
 }
 
 tokens = [

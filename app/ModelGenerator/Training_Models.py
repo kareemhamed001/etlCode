@@ -9,24 +9,24 @@ from keras.models import Model
 import pandas as pd
 
 class CNNModel:
-    def __init__(self, input_shape, num_classes, model):
+    def __init__(self, input_shape, num_classes, model:str):
         self.input_shape = input_shape
         self.num_classes = num_classes
-        if model == 'vgg16':
+        if model.lower() == 'vgg16':
             self.model = self.VGG16Model()
-        elif model == 'vgg19':
+        elif model.lower() == 'vgg19':
             self.model = self.VGG19Model()
-        elif model == 'Custom':
+        elif model.lower() == 'custom':
             self.model = self.build_model()
-        elif model == 'ResNet50':
+        elif model.lower() == 'resnet50':
             self.model = self.ResNet50()
-        elif model == 'ResNet101':
+        elif model.lower() == 'resnet101':
             self.model = self.ResNet101()
-        elif model == 'ResNet152':
+        elif model.lower() == 'resnet152':
             self.model = self.ResNet152()
-        elif model == 'MobileNet':
+        elif model.lower() == 'mobilenet':
             self.model = self.MobileNet()
-        elif model == 'inceptionv3':
+        elif model.lower() == 'inceptionv3':
             self.model = self.inception()
         else:
             print("Invalid model name. Choose from Custom, vgg16,vgg19, ResNet50, ResNet101, ResNet152, MobileNet, or inceptionv3.")
