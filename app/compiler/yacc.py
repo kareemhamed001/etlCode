@@ -41,10 +41,7 @@ def p_Select2(p):
 #==== TRAIN STATEMENT ====
 ###########################
 def p_train(p):
-    'train : TRAIN INTO DATASOURCE FROM DATASOURCE WHERE MODEL EQUAL MODELNAME'
-    print("Length of p:", len(p))
-    print("Contents of p:", p)
-
+    'train : TRAIN INTO DATASOURCE FROM DATASOURCE WHERE MODEL EQUAL MODELNAME COMMA EPOCH EQUAL NUMBER COMMA BATCHSIZE EQUAL NUMBER'
 
     p[3] = str(p[3]).replace("\\", "\\\\")
     p[5] = str(p[5]).replace("\\", "\\\\")
@@ -54,6 +51,8 @@ def p_train(p):
         f"    'operation_type': 'train',\n"
         f"    'source': '{p[3]}',\n"
         f"    'destination': '{p[5]}',\n"
+        f"    'epoch': {p[13]},\n"
+        f"    'batchsize': {p[17]},\n"
         f"    'model': '{p[9]}',\n"
         f"}}\n"
         f"DataSoruce = etl('{p[3]}', '{p[5]}', DataOp)\n"

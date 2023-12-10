@@ -18,42 +18,31 @@ class etl:
             "model":lambda x,y: ModelDs(x,y),
             "console" : lambda x, y: ConsolDS(x,y)
     }
-    def __init__(self, _sorucePath:str, _destinationPath:str, _ColumnList:list) -> None:
+    def __init__(self, _sorucePath:str, _destinationPath:str, __opData:list) -> None:
         self.isThread = False
-        self._getPathesAndTypes(_sorucePath,_destinationPath,_ColumnList['operation_type'])
-        self.ColumnList = _ColumnList
+        self.SourceType=''
+        self.DestinationPath=''
+        self.SourceType = _sorucePath.split('::')[0].lower()
+        self.SourcePath = _sorucePath.split('::')[1].lower()
+        self.DestinationType = _destinationPath.split('::')[0].lower()
+        self.DestinationPath = _destinationPath.split('::')[1].lower() if _destinationPath.split('::')[0].lower() != "console" else None
+        self.OpData = __opData
         self.Data = pandas.DataFrame()
-
-    def _getPathesAndTypes(self,sourcePath,destinationPath,operationType):
-        if operationType=='train':
-            self.SourceType = ''
-            self.SourcePath = ''
-            self.DestinationType =''
-            self.DestinationPath=''
-        else:
-            self.SourceType = sourcePath.split('::')[0].lower()
-            self.SourcePath = sourcePath.split('::')[1].lower()
-            self.DestinationType = destinationPath.split('::')[0].lower()
-            self.DestinationPath = destinationPath.split('::')[1].lower() if destinationPath.split('::')[0].lower() != "console" else None
-            
+        
     # Get DataSoruce Object base one Source file type
-    def __SoruceType(self, _data = None) -> DataSource:
-        return self.ClassType[self.SourceType](_data, self.isThread)
-
-    # Get DataSoruce Object base one Destination file type
-    def __DestinationType(self, _data = None) -> DataSource:
-        return self.ClassType[self.DestinationType](_data, self.isThread)
+    def __Pathtype(self,type, _data = None) -> DataSource:
+        return self.ClassType[type](_data, self.isThread)
 
     def ExtractData(self):
-        self.ExtrClass = self.__SoruceType()
+        self.ExtrClass = self.__Pathtype(self.SourceType)
         self.ExtrData = self.ExtrClass.extract(self.SourcePath)
 
     def TransformData(self):
-        self.TransClass = self.__SoruceType(self.ExtrData)
+        self.TransClass = self.__Pathtype(self.SourceType,self.ExtrData)
         self.TransData = self.TransClass.transform(self.Operation)
 
     def LoadData(self):
-        self.LoadClass = self.__DestinationType(self.TransData)
+        self.LoadClass = self.__Pathtype(self.DestinationType,self.TransData)
         self.LoadClass.load(self.DestinationPath)
 
     def SetupThread(self):
@@ -61,11 +50,11 @@ class etl:
     
     #thread is implemented only in for video (Detector)
     def StartThread(self):
-        if self.SourceType == "video":
+
+        if self.OpData['operation_type']=='train':
+            ModelGenerator(self.SourcePath,self.DestinationPath,str(self.OpData['model']),self.OpData['epoch'],self.OpData['batchsize'])
+        else:
             self.ExtrClass.start()
             self.TransClass.start()
-            self.LoadClass.start()
-        if self.ColumnList['operation_type']=='train':
-                ModelGenerator(str(self.ColumnList['source']),str(self.ColumnList['destination']),str(self.ColumnList['model']))
-            
+            self.LoadClass.start() 
 
