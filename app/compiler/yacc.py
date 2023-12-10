@@ -46,7 +46,7 @@ def p_train(p):
     p[3] = str(p[3]).replace("\\", "\\\\")
     p[5] = str(p[5]).replace("\\", "\\\\")
     p[0] = (
-        f"from app.etl.etlCore import etl\n"
+        f"from app.etl.updatedEtl import etl\n"
         f"DataOp = {{\n"
         f"    'operation_type': 'train',\n"
         f"    'source': '{p[3]}',\n"
@@ -55,8 +55,8 @@ def p_train(p):
         f"    'batchsize': {p[17]},\n"
         f"    'model': '{p[9]}',\n"
         f"}}\n"
-        f"DataSoruce = etl('{p[3]}', '{p[5]}', DataOp)\n"
-        f"DataSoruce.StartThread()\n"
+        f"DataSoruce = etl('{p[5]}', '{p[3]}', DataOp)\n"
+        f"DataSoruce.Start()\n"
     )
 
 

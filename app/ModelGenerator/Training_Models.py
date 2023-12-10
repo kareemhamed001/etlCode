@@ -3,13 +3,14 @@ import numpy as np
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Rescaling
-from keras.applications import ResNet50, MobileNet, VGG16 ,VGG19, ResNet101,ResNet152
+from keras.applications import ResNet50, MobileNet, VGG16, VGG19, ResNet101, ResNet152
 from keras.applications.inception_v3 import InceptionV3
 from keras.models import Model
 import pandas as pd
 
+
 class CNNModel:
-    def __init__(self, input_shape, num_classes, model:str):
+    def __init__(self, input_shape, num_classes, model: str):
         self.input_shape = input_shape
         self.num_classes = num_classes
         if model.lower() == 'vgg16':
@@ -29,7 +30,8 @@ class CNNModel:
         elif model.lower() == 'inceptionv3':
             self.model = self.inception()
         else:
-            print("Invalid model name. Choose from Custom, vgg16,vgg19, ResNet50, ResNet101, ResNet152, MobileNet, or inceptionv3.")
+            print(
+                "Invalid model name. Choose from Custom, vgg16,vgg19, ResNet50, ResNet101, ResNet152, MobileNet, or inceptionv3.")
             exit()
 
     def build_model(self):
@@ -85,17 +87,18 @@ class CNNModel:
         except Exception as ex:
             print(ex)
             return ex
+
     def ResNet50(self):
         try:
             base_model = ResNet50(weights='imagenet',
-                                   include_top=False, input_shape=self.input_shape)
+                                  include_top=False, input_shape=self.input_shape)
             x = Flatten()(base_model.output)
             x = Dense(128, activation='relu')(x)
             output = Dense(self.num_classes, activation='softmax')(x)
 
             model = Model(inputs=base_model.input, outputs=output)
 
-                # Freeze the layers of the pre-trained model
+            # Freeze the layers of the pre-trained model
             for layer in base_model.layers:
                 layer.trainable = False
 
@@ -114,7 +117,7 @@ class CNNModel:
 
             model = Model(inputs=base_model.input, outputs=output)
 
-                # Freeze the layers of the pre-trained model
+            # Freeze the layers of the pre-trained model
             for layer in base_model.layers:
                 layer.trainable = False
 
@@ -133,7 +136,7 @@ class CNNModel:
 
             model = Model(inputs=base_model.input, outputs=output)
 
-                # Freeze the layers of the pre-trained model
+            # Freeze the layers of the pre-trained model
             for layer in base_model.layers:
                 layer.trainable = False
 
@@ -141,7 +144,6 @@ class CNNModel:
         except Exception as ex:
             print(ex)
             return ex
-
 
     def ResNet152(self):
         try:
@@ -153,7 +155,7 @@ class CNNModel:
 
             model = Model(inputs=base_model.input, outputs=output)
 
-                # Freeze the layers of the pre-trained model
+            # Freeze the layers of the pre-trained model
             for layer in base_model.layers:
                 layer.trainable = False
 
@@ -165,14 +167,14 @@ class CNNModel:
     def inception(self):
         try:
             base_model = InceptionV3(weights='imagenet',
-                                   include_top=False, input_shape=self.input_shape)
+                                     include_top=False, input_shape=self.input_shape)
             x = Flatten()(base_model.output)
             x = Dense(128, activation='relu')(x)
             output = Dense(self.num_classes, activation='softmax')(x)
 
             model = Model(inputs=base_model.input, outputs=output)
 
-                # Freeze the layers of the pre-trained model
+            # Freeze the layers of the pre-trained model
             for layer in base_model.layers:
                 layer.trainable = False
 
@@ -193,7 +195,10 @@ class CNNModel:
     def train_model(self, train_dir, batch_size, epochs):
         try:
             train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1.0 / 255)
-            train_generator = train_datagen.flow_from_directory(directory=train_dir,
+            train_generator = train_datagen.flow_from_dataframe(directory='',
+                                                                x_col='path',
+                                                                y_col='label',
+                                                                dataframe=train_dir,
                                                                 target_size=self.input_shape[:2],
                                                                 batch_size=batch_size,
                                                                 class_mode='categorical',
